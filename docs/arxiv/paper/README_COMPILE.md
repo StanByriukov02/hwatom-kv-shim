@@ -9,6 +9,8 @@ pdflatex -interaction=nonstopmode main.tex
 pdflatex -interaction=nonstopmode main.tex
 ```
 
-Output: **`main.pdf`** — artifact repo: https://github.com/StanByriukov02/hwatom-gate-12s tag `t1-eval-20260522`.
+**Public repo (T1):** ships **`main.tex` + `references.bib` only** — no `main.pdf` until arxiv release tag.
+
+Local output: **`main.pdf`** — upload to arxiv; add to public repo only with tag `t1-arxiv-*` (not `t1-eval-20260522`).
 
 **arXiv:** primary **cs.DS**; optional cross-list cs.DC / cs.LG at metadata step.

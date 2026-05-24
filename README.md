@@ -1,6 +1,6 @@
 # Hardware Atom — T1 evaluation (CUDA KV / gate-12s)
 
-**License:** [LICENSE.md](LICENSE.md) (Evaluation-Only) · **Measured results:** [results/GATE12_canonical.txt](results/GATE12_canonical.txt) · **Paper source (pre-arxiv): [docs/arxiv/paper/main.tex](docs/arxiv/paper/main.tex)
+**License:** [LICENSE.md](LICENSE.md) (Evaluation-Only) · **Measured results:** [results/GATE12_canonical.txt](results/GATE12_canonical.txt) · **Paper source (pre-arxiv):** [docs/arxiv/paper/main.tex](docs/arxiv/paper/main.tex)
 
 Reproducible evaluation of a user-space CUDA memory shim that packs logical KV slices under **2 MiB** driver granularity on **NVIDIA H100**. Synthetic microbenchmark only — not production vLLM inference.
 

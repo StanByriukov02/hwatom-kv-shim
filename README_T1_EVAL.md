@@ -43,9 +43,9 @@ If you only run the Docker eval here, you are validating **the physics of packin
 
 | Stage | What ships | What you can check now |
 |-------|------------|------------------------|
-| **1 — Integration** | vLLM (and similar) on **cumem / sleep-mode** path + documented env matrix | [B12 env matrix](docs/agent_workflow/B12_ENV_MATRIX_V1.md) |
-| **2 — Smoke** | Public recipe: prove shim hooks `cuMem*` on a real server image | scripts under `scripts/vllm/` (when tagged in repo) |
-| **3 — Iron** | Fair **stock vs shim** pairing on **one** production-class workload; metrics from **NVML + GATE12**, not PyTorch alone | Protocol: [B measurement](docs/agent_workflow/B_MEASUREMENT_PROTOCOL_V1.md) |
+| **1 — Integration** | vLLM (and similar) on **cumem / sleep-mode** path + documented env matrix | Roadmap only — [Layer B public roadmap](docs/agent_workflow/B_LAYER_PUBLIC_ROADMAP_V1.md) |
+| **2 — Smoke** | Public recipe: prove shim hooks `cuMem*` on a real server image | Not in tag `t1-eval-20260522` |
+| **3 — Iron** | Fair **stock vs shim** pairing on **one** production-class workload; metrics from **NVML + GATE12**, not PyTorch alone | Not in public v1 |
 | **4 — Provider headline** (only after iron) | **More effective KV capacity** at the same **committed VRAM**; **tokens/s** must stay ≥ baseline | No public % until H100 iron closes |
 
 **Audiences we optimize for:**
@@ -56,7 +56,7 @@ If you only run the Docker eval here, you are validating **the physics of packin
 | **Enterprise platform** (NVIDIA / large bank / regulated fleet) | Mechanism proof (A) → **PyTorch pluggable allocator** path, not prod `LD_PRELOAD` |
 | **Research / recon** | Do **not** map T1 synthetic **42%** to vLLM; watch repo for **vLLM integration** tags and new `workload_id` |
 
-**Deep implementation map (for engineers):** [B layer chain](docs/agent_workflow/B_LAYER_IMPLEMENT_CHAIN_V1.md) · [External adoption](docs/agent_workflow/B_EXTERNAL_ADOPTION_STRATEGY_V1.md).
+**Track B (engineers):** [public roadmap](docs/agent_workflow/B_LAYER_PUBLIC_ROADMAP_V1.md) — full implementation vault ships with a future **Track B** git tag, not in this eval release.
 
 ---
 

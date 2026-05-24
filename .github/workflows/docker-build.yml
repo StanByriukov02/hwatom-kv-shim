@@ -1,0 +1,16 @@
+# Build-only CI: verifies Dockerfile.f1prime resolves (no GPU on GitHub runners).
+name: docker-f1prime-build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker build Dockerfile.f1prime
+        run: docker build --no-cache -f docker/gate-12s/Dockerfile.f1prime -t hwatom:gate-12s-f1:ci .

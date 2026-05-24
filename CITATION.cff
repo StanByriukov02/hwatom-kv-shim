@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software or benchmarks, please cite the preprint and tag the repository."
+title: "Hardware Atom T1 — CUDA KV packing shim (gate-12s eval)"
+version: "t1-eval-20260522"
+date-released: 2026-05-22
+license: LicenseRef-evaluation-only
+repository-code: "https://github.com/StanByriukov02/hwatom-gate-12s"
+url: "https://github.com/StanByriukov02/hwatom-gate-12s"
+authors:
+  - family-names: Byriukov
+    given-names: Stanislav
+    email: stanislav.byriukov.research@gmail.com
+    affiliation: Independent Researcher
+preferred-citation:
+  type: article
+  title: "Packing Logical KV Slices Under CUDA 2 MiB Granularity: 42% Measured VRAM Liberation on H100"
+  authors:
+    - family-names: Byriukov
+      given-names: Stanislav
+  year: 2026
+  notes: "arXiv preprint (cs.DS); add arxiv/abs URL when announcement number is live"
+  url: "https://github.com/StanByriukov02/hwatom-gate-12s/tree/t1-eval-20260522"

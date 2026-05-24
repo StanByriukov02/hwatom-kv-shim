@@ -5,7 +5,7 @@
 **Email:** stanislav.byriukov.research@gmail.com  
 **ORCID:** linked on arXiv account (sufficient)  
 **arXiv:** primary **cs.DS**; optional cross-list cs.DC / cs.LG at metadata step  
-**Code:** `github.com/StanByriukov02/hwatom-gate-12s` tag `t1-eval-20260522`  
+**Code:** `github.com/StanByriukov02/hwatom-kv-shim` tag `t1-eval-20260522`  
 **Workload:** `workload_id=a_gate_v1_kv_microbench`
 
 ---
@@ -124,8 +124,8 @@ Stock path: one `cuMemAddressReserve` + `cuMemCreate` + `cuMemMap` per logical s
 ## 7. Reproducibility and artifact
 
 ```bash
-git clone https://github.com/StanByriukov02/hwatom-gate-12s.git
-cd hwatom-gate-12s
+git clone https://github.com/StanByriukov02/hwatom-kv-shim.git
+cd hwatom-kv-shim
 cd hardware_atom
 git checkout t1-eval-20260522
 bash scripts/shim/run_docker_a46_gate12_f1prime_v1.sh

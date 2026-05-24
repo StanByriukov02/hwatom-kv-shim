@@ -14,11 +14,11 @@
 | **Первый push** | Осознанно **full pack+mega** в eval = **честный** iron/Docker parity (`T1_RELEASE` step 1) |
 | **~20h post-push** | `HWATOM_PACK_K_CAP` + tag `gate-12s-eval` |
 
-**Зазор, о котором говорим честно:** в public `hwatom-gate-12s` v1 также лежит **`src/shim/` source** — это **сильнее**, чем «только eval binary». План по **tier/Docker** соблюдён; план «секретность алгоритма» на v1 **не** был целью Gate A.
+**Зазор, о котором говорим честно:** в public `hwatom-kv-shim` v1 также лежит **`src/shim/` source** — это **сильнее**, чем «только eval binary». План по **tier/Docker** соблюдён; план «секретность алгоритма» на v1 **не** был целью Gate A.
 
 ---
 
-## 1. Contour A — eval-open (public `hwatom-gate-12s`)
+## 1. Contour A — eval-open (public `hwatom-kv-shim`)
 
 ### Цель
 
@@ -152,7 +152,7 @@ SASS raises RE cost; **does not** replace contract or integration moat.
 
 | Rule | Detail |
 |------|--------|
-| **When** | **After** public `hwatom-gate-12s` push + tag `t1-eval-20260522` (not blocking day-1) |
+| **When** | **After** public `hwatom-kv-shim` push + tag `t1-eval-20260522` (not blocking day-1) |
 | **Where** | Private CI / registry — **never** same commit stream as public eval without review |
 | **Artifacts** | `hwatom:gate-12s-licensed` (or partner tag), prod `.so` — **not** in public git |
 | **Relation to eval** | Same codebase family; **delivery + license + integration**, not secret physics day-1 |
@@ -165,7 +165,7 @@ SASS raises RE cost; **does not** replace contract or integration moat.
 ## 5. Sequence (aligned with operator)
 
 ```
-1. Public hwatom-gate-12s + tag t1-eval-20260522  (eval-open, full K repro, open src)
+1. Public hwatom-kv-shim + tag t1-eval-20260522  (eval-open, full K repro, open src)
 2. arXiv + inbound recon
 3. ~20h: K-cap eval tag gate-12s-eval          (eval weaker, documented)
 4. **Private** licensed pipeline (build/push .so — **not in git**, separate from public CI)

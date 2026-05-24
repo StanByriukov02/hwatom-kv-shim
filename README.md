@@ -1,10 +1,12 @@
-# Hardware Atom — T1 evaluation (CUDA KV / gate-12s)
+# hwatom-kv-shim — CUDA KV cache shim (H100 eval)
 
-![docker build](https://github.com/StanByriukov02/hwatom-gate-12s/actions/workflows/docker-build.yml/badge.svg)
+![docker build](https://github.com/StanByriukov02/hwatom-kv-shim/actions/workflows/docker-build.yml/badge.svg)
 
-Pack up to four 512 KiB logical KV slices per 2 MiB CUDA leaf on NVIDIA H100 — **42.2%** measured VRAM liberation at 70% budget fill, user-space shim, reproducible Docker eval on any H100 host.
+**Discovery:** `kv-cache` · `cuda` · `cuMem` · `h100` · `gpu-memory` · `inference` · `paged-attention` · user-space shim · vLLM integration (Track B roadmap, not T1 claims).
 
-**License:** [LICENSE.md](LICENSE.md) (Evaluation-Only) · **Measured results:** [results/GATE12_canonical.txt](results/GATE12_canonical.txt) · **Paper source:** [docs/arxiv/paper/main.tex](docs/arxiv/paper/main.tex) · **Cite:** [CITATION.cff](CITATION.cff)
+Pack up to four 512 KiB logical KV slices per 2 MiB CUDA leaf on NVIDIA H100 — **42.2%** measured VRAM liberation at 70% budget fill, reproducible Docker eval. Synthetic `cuMem*` microbench only — not stock vLLM inference.
+
+**License:** [LICENSE.md](LICENSE.md) (Evaluation-Only) · **Measured results:** [results/GATE12_canonical.txt](results/GATE12_canonical.txt) · **Paper source:** [docs/arxiv/paper/main.tex](docs/arxiv/paper/main.tex) (submitted URL: `hwatom-gate-12s` — GitHub redirects to this repo) · **Cite:** [CITATION.cff](CITATION.cff)
 
 Reproducible evaluation of a user-space CUDA memory shim that packs logical KV slices under **2 MiB** driver granularity on **NVIDIA H100**. Synthetic microbenchmark only — not production vLLM inference.
 
@@ -33,8 +35,8 @@ Bundle index: [docs/agent_workflow/T1_PUBLIC_BUNDLE_V1.md](docs/agent_workflow/T
 Linux host with NVIDIA driver and Docker GPU support:
 
 ```bash
-git clone https://github.com/StanByriukov02/hwatom-gate-12s.git
-cd hwatom-gate-12s
+git clone https://github.com/StanByriukov02/hwatom-kv-shim.git
+cd hwatom-kv-shim
 git checkout t1-eval-20260522
 bash scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
 ```

@@ -4,8 +4,8 @@ title: "Hardware Atom T1 — CUDA KV packing shim (gate-12s eval)"
 version: "t1-eval-20260522"
 date-released: 2026-05-22
 license: LicenseRef-evaluation-only
-repository-code: "https://github.com/StanByriukov02/hwatom-gate-12s"
-url: "https://github.com/StanByriukov02/hwatom-gate-12s"
+repository-code: "https://github.com/StanByriukov02/hwatom-kv-shim"
+url: "https://github.com/StanByriukov02/hwatom-kv-shim"
 authors:
   - family-names: Byriukov
     given-names: Stanislav
@@ -19,4 +19,4 @@ preferred-citation:
       given-names: Stanislav
   year: 2026
   notes: "arXiv preprint (cs.DS); add arxiv/abs URL when announcement number is live"
-  url: "https://github.com/StanByriukov02/hwatom-gate-12s/tree/t1-eval-20260522"
+  url: "https://github.com/StanByriukov02/hwatom-kv-shim/tree/t1-eval-20260522"

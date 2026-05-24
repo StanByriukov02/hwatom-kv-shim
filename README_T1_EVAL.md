@@ -65,8 +65,8 @@ If you only run the Docker eval here, you are validating **the physics of packin
 Requires Linux, NVIDIA GPU, Docker with GPU support.
 
 ```bash
-git clone https://github.com/StanByriukov02/hwatom-gate-12s.git
-cd hwatom-gate-12s
+git clone https://github.com/StanByriukov02/hwatom-kv-shim.git
+cd hwatom-kv-shim
 git checkout t1-eval-20260522
 bash scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
 ```

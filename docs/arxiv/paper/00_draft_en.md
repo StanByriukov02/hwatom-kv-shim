@@ -124,7 +124,8 @@ Stock path: one `cuMemAddressReserve` + `cuMemCreate` + `cuMemMap` per logical s
 ## 7. Reproducibility and artifact
 
 ```bash
-git clone https://github.com/StanByriukov02/hwatom-gate-12s
+git clone https://github.com/StanByriukov02/hwatom-gate-12s.git
+cd hwatom-gate-12s
 cd hardware_atom
 git checkout t1-eval-20260522
 bash scripts/shim/run_docker_a46_gate12_f1prime_v1.sh

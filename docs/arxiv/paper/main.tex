@@ -314,11 +314,11 @@ VRAM savings translate to concurrent capacity and cost only after integration on
 
 \section{Reproducibility and Artifact}
 
-Repository (URL at preview): \texttt{github.com/StanByriukov02/hwatom-gate-12s}, tag \texttt{t1-eval-20260522}~\cite{hardware_atom_t1}.
+Repository: \texttt{github.com/StanByriukov02/hwatom-gate-12s}, tag \texttt{t1-eval-20260522}~\cite{hardware_atom_t1}.
 
 \begin{lstlisting}
-git clone https://github.com/StanByriukov02/hwatom-gate-12s
-cd hardware_atom
+git clone https://github.com/StanByriukov02/hwatom-gate-12s.git
+cd hwatom-gate-12s
 git checkout t1-eval-20260522
 bash scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
 # Bare-metal iron (H100):
@@ -385,7 +385,7 @@ GATE12_END
   \item Abstract states \textbf{synthetic} workload and denies inference/Z claims.
   \item Primary arXiv category: \textbf{cs.DS}; optional cross-list cs.DC / cs.LG.
   \item Numbers match \texttt{GATE12\_canonical.txt} and Appendix~\ref{app:curve}.
-  \item Git tag \texttt{t1-eval-20260522} live before upload (replace [TBD] URL).
+  \item Git tag \texttt{t1-eval-20260522} on \texttt{StanByriukov02/hwatom-gate-12s} (public eval repo).
 \end{itemize}
 
 \bibliographystyle{plain}

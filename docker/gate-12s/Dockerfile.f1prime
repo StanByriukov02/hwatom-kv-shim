@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1.6
+# A-4.6 — GPU e2e: F1-frag iron inside container (same stress as A-4.5c).
+# Scratch :gate-12s stays dry/CI; this image is for --gpus all iron repro.
+
+FROM nvidia/cuda:12.6.0-devel-ubuntu22.04 AS build
+WORKDIR /src
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libc6-dev make ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN make -C src/shim clean all \
+    && make -C tools/shim_iron clean iron_gate_v1
+
+FROM nvidia/cuda:12.6.0-base-ubuntu22.04
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/hwatom
+COPY --from=build /src/tools/shim_iron/iron_gate_v1 /opt/hwatom/iron_gate_v1
+COPY --from=build /src/src/shim/lib2adic_shim.so /opt/hwatom/lib2adic_shim.so
+COPY docker/gate-12s/entrypoint_f1prime.sh /opt/hwatom/entrypoint_f1prime.sh
+RUN chmod +x /opt/hwatom/entrypoint_f1prime.sh /opt/hwatom/iron_gate_v1
+ENV HWATOM_DIR=/opt/hwatom
+ENTRYPOINT ["/opt/hwatom/entrypoint_f1prime.sh"]

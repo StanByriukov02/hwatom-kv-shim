@@ -1,0 +1,58 @@
+@manual{cuda_prog_guide,
+  title        = {{CUDA C++ Programming Guide}},
+  author       = {{NVIDIA Corporation}},
+  year         = {2024},
+  note         = {Virtual memory management chapter; driver API},
+  url          = {https://docs.nvidia.com/cuda/cuda-c-programming-guide/}
+}
+
+@manual{cuda_driver_cuMem,
+  title        = {{CUDA Driver API: Memory Management}},
+  author       = {{NVIDIA Corporation}},
+  year         = {2024},
+  note         = {cuMemAddressReserve, cuMemCreate, cuMemMap},
+  url          = {https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__MEM.html}
+}
+
+@inproceedings{vllm,
+  title        = {Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
+  author       = {Woosuk Kwon and Zhuohan Li and Siyuan Zhuang and Ying Sheng and Lianmin Zheng and Cody Hao Yu and Joseph E. Gonzalez and Hao Zhang and Ion Stoica},
+  booktitle    = {Proceedings of the 29th Symposium on Operating Systems Principles},
+  year         = {2023},
+  note         = {Background: KV cache pressure in serving; not our evaluation stack}
+}
+
+@misc{hardware_atom_t1,
+  title        = {{Hardware Atom: T1 Evaluation Repository}},
+  author       = {Byriukov, Stanislav},
+  year         = {2026},
+  howpublished = {\url{https://github.com/StanByriukov02/hwatom-gate-12s}},
+  note         = {Tag: t1-eval-20260522. workload\_id=a\_gate\_v1\_kv\_microbench. Evaluation-Only LICENSE.}
+}
+
+@article{attention_is_all_you_need,
+  title   = {Attention Is All You Need},
+  author  = {Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and Lukasz Kaiser and Illia Polosukhin},
+  journal = {Advances in Neural Information Processing Systems},
+  year    = {2017},
+  note    = {Background: transformer KV growth}
+}
+
+@article{sze2017efficient,
+  title   = {Efficient Processing of Deep Neural Networks: A Tutorial and Survey},
+  author  = {Sze, Vivienne and Chen, Yu-Hsin and Yang, Tien-Ju and Emer, Joel S.},
+  journal = {Proceedings of the IEEE},
+  volume  = {105},
+  number  = {12},
+  pages   = {2295--2329},
+  year    = {2017},
+  note    = {GPU memory pressure context; same bib style as arXiv:2602.04936}
+}
+
+@article{byriukov2026tal,
+  title   = {Deterministic Retrieval at Scale: Optimal-Space {LCP} Indexing and 308x Energy Reduction on Modern {GPUs}},
+  author  = {Byriukov, Stanislav},
+  journal = {arXiv preprint arXiv:2602.04936},
+  year    = {2026},
+  note    = {Prior work by same author on iron GPU measurement receipts—not validation of KV shim claims}
+}

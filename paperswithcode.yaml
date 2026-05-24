@@ -1,0 +1,24 @@
+# Papers With Code crawler metadata (T1 eval tag)
+paper:
+  arxiv_id: null  # fill after submit
+  title: "Packing Logical KV Slices Under CUDA 2 MiB Granularity: 42% Measured VRAM Liberation on H100"
+  authors:
+    - Stanislav Byriukov
+
+repository:
+  url: https://github.com/StanByriukov02/hwatom-gate-12s
+  tag: t1-eval-20260522
+
+tasks:
+  - name: GPU Memory Management
+    datasets: []
+    metrics:
+      - cache_liberation_pct
+      - logical_kv_gain_pct
+      - layout_efficiency_pct
+
+workload_id: a_gate_v1_kv_microbench
+repro:
+  dockerfile: docker/gate-12s/Dockerfile.f1prime
+  script: scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
+  canonical_results: results/GATE12_canonical.txt

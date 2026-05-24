@@ -1,0 +1,29 @@
+# Node 4b — measured cache liberation (not headline-only)
+# Protocol: docs/agent_workflow/A47_T1_SHIM_EVIDENCE_CLOSEOUT_V1.md
+# Source artifact: bench_artifacts/h100_pull_20260522/vram_curve_20260522T062629Z/
+# Method: iso_logical_v2 fill-to-budget, stock vs shim @ matched VRAM budget %
+
+measurement_date: 2026-05-22
+gpu_sku: NVIDIA H100 PCIe
+driver_version: 550.163.01
+workload_id: a_gate_v1_kv_microbench
+stress_mode: vram_budget_curve_v1
+
+# C-082 band reference: 30–40% cache liberation (audit anchor)
+
+cache_liberation_pct_50: 19.0834
+cache_liberation_pct_60: 32.5706
+cache_liberation_pct_70: 42.2040
+
+logical_kv_gain_pct_50: 223
+logical_kv_gain_pct_60: 169
+logical_kv_gain_pct_70: 131
+
+committed_bytes_stock_70: 59450064896
+committed_bytes_shim_70: 34359738368
+resident_slots_shim_70: 65536
+
+node4b_verdict: PASS_ANCHOR_AT_70pct
+node4b_note: 42.2% touches upper 30-40% band; 50% tier below band is expected per A49 (stock not yet scaled committed)
+
+canonical_gate12: results/GATE12_canonical.txt (section 2)

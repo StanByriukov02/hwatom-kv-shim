@@ -1,0 +1,52 @@
+HWATOM_EVAL v1
+By continuing execution you accept LICENSE.md (Evaluation-Only).
+No reverse engineering or production use.
+HWATOM_EVAL_END
+GATE12_BEGIN
+workload_id=a_gate_v1_kv_microbench
+workload_class=synthetic_kv_band
+stress_mode=zp12_scout_iron_v1
+kv_tail_stock_path=resident_pool_touch
+kv_tail_shim_path=resident_pool_touch
+power_sample_source=nvidia_smi_dmon_p
+iso_slice_bytes=524288
+run_id=1779441264
+gpu_sku=NVIDIA H100 PCIe
+driver_driver_version=550.163.01
+p50_ms_stock=0.002534
+p50_ms_shim=0.002344
+p99_ms_stock=0.005298
+p99_ms_shim=0.004427
+p99_9_ms_stock=0.013291
+p99_9_ms_shim=0.013150
+tail_latency_reduction_pct=16.4402
+tail_latency_ratio_stock_over_shim=1.1967
+kv_ops_per_s_stock=246146.84
+kv_ops_per_s_shim=208599.92
+kv_tail_iters_stock=1449492
+kv_tail_iters_shim=1455387
+watts_avg_stock=78.4000
+watts_avg_shim=79.7000
+watts_samples_stock=20
+watts_samples_shim=20
+kv_effective_GBps_stock=129.0518
+kv_effective_GBps_shim=109.3664
+kv_ops_per_watt_stock=3139.6280
+kv_ops_per_watt_shim=2617.3139
+kv_efficiency_gain_pct=-16.6362
+gemm_gflops_proxy_stock=49409.2498
+gemm_gflops_proxy_shim=49496.3984
+gemm_gflops_per_watt_stock=630.2200
+gemm_gflops_per_watt_shim=621.0339
+flops_per_watt_note=gemm_is_compute_proxy_kv_is_memory_touch_proxy
+llc_misses_delta=null
+dtlb_misses_delta=null
+ram_efficiency_pct=null
+oom_stock=ok
+oom_shim=ok
+elapsed_s=12.000
+GATE12_END
+HWATOM_EVAL_COMPLETE
+Evaluation limit reached. Production / unlimited binary: contact stanislav.byriukov.research@gmail.com (gain-share).
+IRON_ZP1_KV_TAIL_WEAK tail_red=16.44 ratio=1.20
+IRON_ZP2_KV_POWER_WEAK eff_gain=-16.64

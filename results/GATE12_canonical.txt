@@ -1,0 +1,75 @@
+# GATE12 canonical paste — T1 public (measured H100, 2026-05-22)
+# Sources: bench_artifacts/h100_pull_20260522/
+# Do not edit numbers by hand; re-run iron/docker and replace from stdout.
+
+# --- 1) F1′ uniform resident (iron) ---
+# Source: gate12_f1prime_20260522T064350Z/GATE12_F1PRIME_stdout.txt
+HWATOM_EVAL v1
+By continuing execution you accept LICENSE.md (Evaluation-Only).
+No reverse engineering or production use.
+HWATOM_EVAL_END
+GATE12_BEGIN
+workload_id=a_gate_v1_kv_microbench
+workload_class=synthetic_kv_band
+stress_mode=f1_frag_v1
+context_cap_tokens=30248
+resident_slots_stock=30202
+resident_slots_shim=30248
+layout_efficiency_stock=70.3136
+layout_efficiency_shim=100.0000
+kv_gain_pct=0.1523
+kv_gain_method=f1_prime_n_fail_v1
+run_id=1779432268
+gpu_sku=NVIDIA H100 PCIe
+driver_version=550.163.01
+kv_headroom_pct=81.3272
+ram_efficiency_pct=null
+oom_stock=ok
+oom_shim=ok
+llc_misses_delta=null
+dtlb_misses_delta=null
+p50_ms=null
+p99_9_ms=null
+elapsed_s=8.000
+GATE12_END
+HWATOM_EVAL_COMPLETE
+Evaluation limit reached. Production / unlimited binary: contact stanislav.byriukov.research@gmail.com (gain-share).
+
+# --- 2) VRAM budget curve (iso, canonical no-GQA) ---
+# Source: vram_curve_20260522T062629Z/GATE12_VRAM_CURVE_stdout.txt
+# Node 4b anchor: cache_liberation_pct_70=42.2040
+GATE12_BEGIN
+workload_id=a_gate_v1_kv_microbench
+workload_class=synthetic_kv_band
+stress_mode=vram_budget_curve_v1
+cache_liberation_method=iso_logical_v2
+vram_budget_pct_50=50
+cache_liberation_pct_50=19.0834
+logical_kv_gain_pct_50=223
+vram_budget_pct_60=60
+cache_liberation_pct_60=32.5706
+logical_kv_gain_pct_60=169
+vram_budget_pct_70=70
+resident_slots_stock_70=28348
+resident_slots_shim_70=65536
+committed_bytes_stock_70=59450064896
+committed_bytes_shim_70=34359738368
+logical_kv_gain_pct_70=131
+cache_liberation_pct_70=42.2040
+curve_point_70_status=ok
+GATE12_END
+
+# --- 3) Docker F1′ repro ---
+# Source: docker_a46_20260522T064616Z/GATE12_F1PRIME_stdout.txt
+# Container: A46_DOCKER_OK
+GATE12_BEGIN
+workload_id=a_gate_v1_kv_microbench
+workload_class=synthetic_kv_band
+stress_mode=f1_frag_v1
+resident_slots_stock=40268
+resident_slots_shim=29877
+layout_efficiency_shim=100.0000
+oom_stock=ok
+oom_shim=ok
+elapsed_s=8.000
+GATE12_END

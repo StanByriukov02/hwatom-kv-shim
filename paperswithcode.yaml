@@ -6,7 +6,7 @@ paper:
     - Stanislav Byriukov
 
 repository:
-  url: https://github.com/StanByriukov02/hwatom-gate-12s
+  url: https://github.com/StanByriukov02/hwatom-kv-shim
   tag: t1-eval-20260522
 
 tasks:

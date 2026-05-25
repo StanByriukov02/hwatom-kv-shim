@@ -18,13 +18,18 @@ If you only run the Docker eval here, you are validating **the physics of packin
 
 **Environment:** NVIDIA H100-class GPU, driver band **~550.x**, **512 KiB** logical KV slices inside **2 MiB** CUDA granularity.
 
-| Result (synthetic, frozen tag `t1-eval-20260522`) | Where |
-|--------------------------------------------------|--------|
-| More **logical KV** at **lower committed VRAM** vs stock allocator | `results/GATE12_canonical.txt` |
-| **~42%** cache liberation @ **70%** VRAM budget, **~2.3×** logical KV vs stock (iso fill) | same |
-| Reproducible **Docker** run (`A46_DOCKER_OK`) | `docker/gate-12s/Dockerfile.f1prime` |
+| Result (synthetic) | Tag | Where |
+|------------------|-----|--------|
+| F1′ + VRAM curve @70% (legacy lead) | `t1-eval-20260522` | `results/GATE12_canonical.txt` |
+| **Intra–2 MiB leaf ceiling** (`eta_leaf=100%`, iso @ budget) | **`t1-leaf-physics-20260525`** | **`results/GATE12_leaf_physics_v1.txt`** |
+| Reproducible **Docker** run (`A46_DOCKER_OK`) | `t1-eval-20260522` | `docker/gate-12s/Dockerfile.f1prime` |
+| **Iron leaf physics** (`LEAF_PHYSICS_OK=yes`) | `t1-leaf-physics-20260525` | `scripts/shim/run_iron_leaf_ceiling_v1.sh` |
 
-**Methodology:** [A49 claim protocol](docs/agent_workflow/A49_CLAIM_PROTOCOL_CACHE_LIBERATION_V1.md).
+**Leaf physics @70% budget (tag `t1-leaf-physics-20260525`, `workload_id=t1_leaf_physics_v1`):** **42.20%** cache liberation @ committed, **131%** logical KV gain, **100%** layout efficiency (at theoretical leaf ceiling). Contract: [IRON_LEAF_CEILING_SPEC_V1.md](docs/agent_workflow/IRON_LEAF_CEILING_SPEC_V1.md).
+
+**Do not headline** `resident_slots_shim` vs stock — slot count is diagnostic, not the battle metric.
+
+**Methodology:** [A49 claim protocol](docs/agent_workflow/A49_CLAIM_PROTOCOL_CACHE_LIBERATION_V1.md) · leaf iron [N2 pass](docs/agent_workflow/N2_LEAF_PHYSICS_PASS_20260525_V1.md) (vault mirror; public: CHANGELOG).
 
 ---
 
@@ -56,7 +61,7 @@ If you only run the Docker eval here, you are validating **the physics of packin
 | **Enterprise platform** (NVIDIA / large bank / regulated fleet) | Mechanism proof (A) → **PyTorch pluggable allocator** path, not prod `LD_PRELOAD` |
 | **Research / recon** | Do **not** map T1 synthetic **42%** to vLLM; watch repo for **vLLM integration** tags and new `workload_id` |
 
-**Track B (engineers):** [public roadmap](docs/agent_workflow/B_LAYER_PUBLIC_ROADMAP_V1.md) — full implementation vault ships with a future **Track B** git tag, not in this eval release.
+**Track B (engineers):** [public roadmap](docs/agent_workflow/B_LAYER_PUBLIC_ROADMAP_V1.md) — full implementation vault ships with a future **Track B** git tag, not in this eval release. **Do not** map Layer A Table 1 metrics to vLLM until a separate `workload_id=b_vllm_*` canonical exists (contract: `SHIM_INVIOLABLE_CONTRACT_V1.md` §8.2).
 
 ---
 
@@ -97,7 +102,11 @@ Details: [Two contours](docs/agent_workflow/TWO_CONTOUR_EVAL_OPEN_VS_PARTNER_CLO
 
 ## For monitoring / recon (keywords)
 
-`hardware-atom` `cuMem` `KV-cache` `vLLM` `memory-packing` `gate-12s` `cache-liberation` `VRAM` `inference-integration` — **Layer B vLLM metrics:** not valid until announced with new tag and `workload_id`.
+`hardware-atom` `cuMem` `KV-cache` `memory-packing` `gate-12s` `cache-liberation` `VRAM` **`t1_leaf_physics_v1`** **`t1-leaf-physics-20260525`** **`intra-leaf`** **`layout_efficiency`** **`eta_leaf_ceiling_ratio`** `internal-fragmentation` `2 MiB leaf`
+
+**Layer B vLLM / NVML metrics:** not valid until announced with `workload_id=b_vllm_*` and a separate tag.
+
+**Recon path:** [N3_RECON_ALERT_PATH_20260525_V1.md](docs/agent_workflow/N3_RECON_ALERT_PATH_20260525_V1.md) (private vault; public: tag + `results/GATE12_leaf_physics_v1.txt`).
 
 ---
 

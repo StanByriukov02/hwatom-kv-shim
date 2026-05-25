@@ -1,0 +1,67 @@
+# GATE12 canonical paste — leaf physics iron (N2, 2026-05-25)
+# Source: bench_artifacts/leaf_physics_20260525T070703Z/GATE12_LEAF_PHYSICS_stdout.txt
+# Tag: t1-leaf-physics-20260525 · workload_id=t1_leaf_physics_v1
+# Do not edit numbers by hand; re-run: bash scripts/shim/run_iron_leaf_ceiling_v1.sh
+
+HWATOM_EVAL v1
+By continuing execution you accept LICENSE.md (Evaluation-Only).
+HWATOM_EVAL_END
+GATE12_BEGIN
+build_id=b_shim_20260525a
+workload_id=t1_leaf_physics_v1
+workload_class=synthetic_kv_band
+stress_mode=t1_leaf_physics_v1
+cache_liberation_method=iso_logical_v2
+measurement_contract=IRON_LEAF_CEILING_SPEC_V1
+leaf_bytes=2097152
+iso_slice_bytes=524288
+k_max_per_leaf=4
+eta_shim_ceiling_leaf_pct=100.0000
+curve_point_count=3
+run_id=1779692970
+gpu_sku=NVIDIA H100 PCIe
+driver_version=550.163.01
+vram_budget_pct_50=50
+resident_slots_stock_50=20248
+resident_slots_shim_50=65536
+logical_kv_bytes_stock_50=10615783424
+logical_kv_bytes_shim_50=34359738368
+committed_bytes_stock_50=42463133696
+committed_bytes_shim_50=34359738368
+layout_efficiency_shim_50=100.0000
+eta_leaf_ceiling_ratio_50=1.0000
+logical_kv_gain_pct_50=223
+cache_liberation_pct_50=19.0834
+curve_point_50_status=ok
+vram_budget_pct_60=60
+resident_slots_stock_60=24298
+resident_slots_shim_60=65536
+logical_kv_bytes_stock_60=12739149824
+logical_kv_bytes_shim_60=34359738368
+committed_bytes_stock_60=50956599296
+committed_bytes_shim_60=34359738368
+layout_efficiency_shim_60=100.0000
+eta_leaf_ceiling_ratio_60=1.0000
+logical_kv_gain_pct_60=169
+cache_liberation_pct_60=32.5706
+curve_point_60_status=ok
+vram_budget_pct_70=70
+resident_slots_stock_70=28348
+resident_slots_shim_70=65536
+logical_kv_bytes_stock_70=14862516224
+logical_kv_bytes_shim_70=34359738368
+committed_bytes_stock_70=59450064896
+committed_bytes_shim_70=34359738368
+layout_efficiency_shim_70=100.0000
+eta_leaf_ceiling_ratio_70=1.0000
+logical_kv_gain_pct_70=131
+cache_liberation_pct_70=42.2040
+curve_point_70_status=ok
+curve_points_ok=3
+ceiling_ratio_at_70=1.0000
+N2_PASS_ceiling_ratio=yes
+N2_PASS_logical_kv_gain_70=yes
+GATE12_END
+HWATOM_EVAL_COMPLETE
+LEAF_PHYSICS_OK=yes
+LEAF_PHYSICS_METRICS liberation_70=42.20 gain_70=131

@@ -1,13 +1,38 @@
-# Papers With Code crawler metadata (T1 eval tag)
+# Papers With Code / recon crawler metadata
+# Two dated releases — do not merge workload_id across tags.
+
+releases:
+  - tag: t1-eval-20260522
+    workload_id: a_gate_v1_kv_microbench
+    canonical_results: results/GATE12_canonical.txt
+    repro:
+      dockerfile: docker/gate-12s/Dockerfile.f1prime
+      script: scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
+    headline_metrics:
+      cache_liberation_pct_70: 42.204
+      logical_kv_gain_pct_70: 131
+
+  - tag: t1-leaf-physics-20260525
+    workload_id: t1_leaf_physics_v1
+    measurement_contract: IRON_LEAF_CEILING_SPEC_V1
+    canonical_results: results/GATE12_leaf_physics_v1.txt
+    repro:
+      script: scripts/shim/run_iron_leaf_ceiling_v1.sh
+    headline_metrics:
+      layout_efficiency_shim_70: 100.0
+      eta_leaf_ceiling_ratio_70: 1.0
+      logical_kv_gain_pct_70: 131
+      cache_liberation_pct_70: 42.20
+    pass_gate: LEAF_PHYSICS_OK=yes
+
 paper:
-  arxiv_id: null  # fill after submit
-  title: "Packing Logical KV Slices Under CUDA 2 MiB Granularity: 42% Measured VRAM Liberation on H100"
+  arxiv_id: null
+  title: "Packing Logical KV Slices Under CUDA 2 MiB Granularity: Measured VRAM Liberation on H100"
   authors:
     - Stanislav Byriukov
 
 repository:
   url: https://github.com/StanByriukov02/hwatom-kv-shim
-  tag: t1-eval-20260522
 
 tasks:
   - name: GPU Memory Management
@@ -16,9 +41,11 @@ tasks:
       - cache_liberation_pct
       - logical_kv_gain_pct
       - layout_efficiency_pct
+      - eta_leaf_ceiling_ratio
 
-workload_id: a_gate_v1_kv_microbench
-repro:
-  dockerfile: docker/gate-12s/Dockerfile.f1prime
-  script: scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
-  canonical_results: results/GATE12_canonical.txt
+keywords:
+  - cuMem
+  - intra-leaf
+  - internal-fragmentation
+  - gate-12s
+  - t1_leaf_physics_v1

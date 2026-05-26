@@ -1,0 +1,22 @@
+MOON_XQ_GATE_SUMMARY — workload MOON-REP-Xq-VLLM-01
+date=2026-05-26
+model=Qwen/Qwen2.5-7B-Instruct
+stack=vllm/vllm-openai:v0.21.0 turboquant_4bit_nc
+
+GATE bytes_reduction_pct=58.0 PASS
+GATE cos_mean=0.9756 PASS
+GATE ppl_drift_pct=0.58 PASS
+GATE niah_deep_16k_32k=PASS
+GATE k1_grass_loop=PASS
+GATE tok_s_ratio_vs_fp16_fa2=0.860 FAIL
+GATE tier3_eod_signed=FAIL
+
+H_B verdict=H_B_CONFIRMED_QUANT_COST
+meaning=tok/s gap is real KV/TQ cost on bench; not FA2-only artifact
+
+receipts:
+  docs/agent_workflow/PATH_A_TIER3_VLLM_RECEIPT_20260526_V2.json
+  docs/agent_workflow/PATH_B_HB_FA2_RECEIPT_20260526_V1.json
+  docs/agent_workflow/TIER1_MOON_REP_VERDICT_20260526_V1.md
+
+public_doc=docs/MOON_XQ_EVAL.md

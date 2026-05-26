@@ -64,6 +64,7 @@ size_t shim_round_leaf_size(size_t size);
 int shim_is_leaf_aligned(size_t size);
 size_t shim_leaf_ladder_round(size_t size, unsigned level);
 unsigned shim_pack_k_cap_max_v1(void);
+int shim_pack_eval_build_v1(void);
 size_t shim_placement_round_v1(size_t req);
 void shim_pack_reset(void);
 void shim_pack_flush(void);
@@ -80,11 +81,19 @@ int shim_pack_open_arena(CUdeviceptr va, size_t va_len, CUmemGenericAllocationHa
 CUmemGenericAllocationHandle shim_pack_arena_handle(void);
 CUmemGenericAllocationHandle shim_pack_arena_handle_locked(void);
 size_t shim_pack_committed_bytes(void);
+size_t shim_pack_committed_peak_bytes(void);
 size_t shim_pack_map_offset_for_va(CUdeviceptr va);
 int shim_pack_is_packed_subva(CUdeviceptr va);
 /* Caller must hold g_map_epoch_mu. */
 int shim_pack_is_packed_subva_locked(CUdeviceptr va);
 void shim_pack_bump_usage(size_t logical_req);
+int shim_2adic_enabled_v1(void);
+void shim_2adic_reset(void);
+unsigned shim_2adic_band_count(void);
+unsigned shim_2adic_slots_per_leaf(size_t need_va, size_t leaf_bytes);
+size_t shim_2adic_offset_in_leaf(unsigned band_idx, size_t need_va, size_t leaf_bytes);
+unsigned shim_2adic_mega_leaf_for_band(unsigned band_idx, unsigned slots_per_leaf);
+unsigned shim_2adic_bump_band(void);
 void shim_pack_retain_handle(void);
 int shim_pack_release_ref(CUmemGenericAllocationHandle handle);
 
@@ -158,5 +167,9 @@ void shim_unmap_clear_mapped(CUdeviceptr ptr);
 CUresult shim_release_validate(CUmemGenericAllocationHandle handle);
 void shim_release_clear(CUmemGenericAllocationHandle handle);
 const shim_alloc_slot_t *shim_alloc_snapshot(void);
+
+/* PATCH-004 / B-CONC-12 */
+const char *hwatom_shim_build_id(void);
+void hwatom_shim_emit_identity_once(void);
 
 #endif

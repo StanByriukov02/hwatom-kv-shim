@@ -360,10 +360,14 @@ static int resident_map_size(ResidentSlot *slot, size_t req_logical, size_t *com
     }
     {
         CUmemAccessDesc access = {0};
+        CUresult r;
+
         access.location.type = CU_MEM_LOCATION_TYPE_DEVICE;
         access.location.id = 0;
         access.flags = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
-        if (cuMemSetAccess(slot->va, map_sz, &access, 1) != CUDA_SUCCESS) {
+        r = cuMemSetAccess(slot->va, map_sz, &access, 1);
+        if (r != CUDA_SUCCESS) {
+            iron_diag_cuda_fail("cuMemSetAccess", slot_idx, r);
             cuMemUnmap(slot->va, map_sz);
             cuMemRelease(slot->handle);
             cuMemAddressFree(slot->va, reserve_sz);

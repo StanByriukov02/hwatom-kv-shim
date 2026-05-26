@@ -10,10 +10,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* RTLD_NEXT misses libcuda in vLLM Docker workers; dlopen fallback for B12 smoke. */
+static void *shim_dlsym_driver(const char *sym)
+{
+    void *p = dlsym(RTLD_NEXT, sym);
+    if (p) {
+        return p;
+    }
+    static void *cuda = NULL;
+    if (!cuda) {
+        cuda = dlopen("libcuda.so.1", RTLD_NOW | RTLD_LOCAL);
+        if (!cuda) {
+            cuda = dlopen("libcuda.so", RTLD_NOW | RTLD_LOCAL);
+        }
+    }
+    if (cuda) {
+        p = dlsym(cuda, sym);
+    }
+    return p;
+}
+
 #define RESOLVE(sym, fn_type)                                                    \
     do {                                                                         \
         if (!real_##sym) {                                                       \
-            real_##sym = (fn_type)dlsym(RTLD_NEXT, #sym);                        \
+            real_##sym = (fn_type)shim_dlsym_driver(#sym);                       \
             if (!real_##sym) {                                                   \
                 fprintf(stderr, "SHIM_FATAL dlsym " #sym " failed\n");          \
             }                                                                    \
@@ -46,6 +66,7 @@ static cuMemGetAllocationGranularity_fn real_cuMemGetAllocationGranularity;
 CUresult cuMemAddressReserve(CUdeviceptr *ptr, size_t size, size_t alignment,
                              CUdeviceptr addr, unsigned long long flags)
 {
+    hwatom_shim_emit_identity_once();
     shim_reserve_request_t req = {
         .size = size,
         .alignment = alignment,
@@ -274,6 +295,13 @@ CUresult cuMemSetAccess(CUdeviceptr ptr, size_t size, const CUmemAccessDesc *des
         shim_trace("held", "cuMemSetAccess", "packed_sub_skip");
         return CUDA_SUCCESS;
     }
+    /*
+     * P1 iso: iron may pass logical span (< 2 MiB); driver requires granule-aligned
+     * SetAccess on the mapped physical leaf at arena base.
+     */
+    if (shim_pack_arena_active() && acc_sz > 0 && acc_sz < shim_leaf_bytes_v1()) {
+        acc_sz = shim_leaf_bytes_v1();
+    }
     snprintf(detail, sizeof(detail), "ptr=%llu count=%zu acc=%zu",
              (unsigned long long)ptr, count, acc_sz);
     shim_trace("held", "cuMemSetAccess", detail);
@@ -287,6 +315,66 @@ void shim_driver_reset_v1(void)
     shim_pack_reset();
     shim_gqa_reset();
     shim_reservation_clear();
+}
+
+static void hwatom_shim_emit_stats_line(void)
+{
+    const char *build_id = hwatom_shim_build_id();
+    size_t peak = shim_pack_committed_peak_bytes();
+    size_t fini = shim_pack_committed_bytes();
+    unsigned mega_rc = shim_pack_mega_reserve_count();
+    unsigned mega_lv = shim_pack_mega_leaf_used();
+    const char *json = getenv("HWATOM_SHIM_STATS_JSON");
+
+    if (json && json[0] && json[0] != '0') {
+        if (shim_2adic_enabled_v1()) {
+            fprintf(stderr,
+                    "{\"type\":\"SHIM_STATS\",\"stats_v\":2,\"build_id\":\"%s\","
+                    "\"eval_shim\":%d,\"k_cap\":%u,"
+                    "\"pack_committed_peak_bytes\":%zu,"
+                    "\"pack_committed_fini_bytes\":%zu,"
+                    "\"mega_reserve_count\":%u,\"mega_leaves_used\":%u,"
+                    "\"shim_2adic_bands\":%u}\n",
+                    build_id, shim_pack_eval_build_v1(), shim_pack_k_cap_max_v1(),
+                    peak, fini, mega_rc, mega_lv, shim_2adic_band_count());
+        } else {
+            fprintf(stderr,
+                    "{\"type\":\"SHIM_STATS\",\"stats_v\":2,\"build_id\":\"%s\","
+                    "\"eval_shim\":%d,\"k_cap\":%u,"
+                    "\"pack_committed_peak_bytes\":%zu,"
+                    "\"pack_committed_fini_bytes\":%zu,"
+                    "\"mega_reserve_count\":%u,\"mega_leaves_used\":%u}\n",
+                    build_id, shim_pack_eval_build_v1(), shim_pack_k_cap_max_v1(),
+                    peak, fini, mega_rc, mega_lv);
+        }
+        return;
+    }
+    if (shim_2adic_enabled_v1()) {
+        fprintf(stderr,
+                "SHIM_STATS stats_v=2 build_id=%s eval_shim=%d k_cap=%u "
+                "pack_committed_bytes=%zu pack_committed_peak_bytes=%zu "
+                "pack_committed_fini_bytes=%zu mega_reserve_count=%u "
+                "mega_leaves_used=%u shim_2adic_bands=%u\n",
+                build_id, shim_pack_eval_build_v1(), shim_pack_k_cap_max_v1(), peak,
+                peak, fini, mega_rc, mega_lv, shim_2adic_band_count());
+    } else {
+        fprintf(stderr,
+                "SHIM_STATS stats_v=2 build_id=%s eval_shim=%d k_cap=%u "
+                "pack_committed_bytes=%zu pack_committed_peak_bytes=%zu "
+                "pack_committed_fini_bytes=%zu mega_reserve_count=%u "
+                "mega_leaves_used=%u\n",
+                build_id, shim_pack_eval_build_v1(), shim_pack_k_cap_max_v1(), peak,
+                peak, fini, mega_rc, mega_lv);
+    }
+}
+
+void __attribute__((destructor)) hwatom_shim_fini(void)
+{
+    const char *e = getenv("HWATOM_SHIM_STATS");
+    if (!e || e[0] == '0') {
+        return;
+    }
+    hwatom_shim_emit_stats_line();
 }
 
 CUresult cuMemGetAllocationGranularity(size_t *granularity,

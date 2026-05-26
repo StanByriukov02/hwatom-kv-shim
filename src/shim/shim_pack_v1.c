@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define SHIM_PACK_MEGA_LEAVES_DEFAULT 32u
+#define SHIM_PACK_MEGA_LEAVES_MAX 8192u
 
 typedef struct shim_pack_arena_st {
     int active;
@@ -26,7 +27,46 @@ typedef struct shim_mega_st {
 static shim_pack_arena_t g_pack_arena;
 static shim_mega_t g_mega;
 static size_t g_pack_committed_total;
+static size_t g_pack_committed_peak;
 static int g_pack_handle_refs;
+
+static void shim_pack_note_committed(size_t n)
+{
+    g_pack_committed_total += n;
+    if (g_pack_committed_total > g_pack_committed_peak) {
+        g_pack_committed_peak = g_pack_committed_total;
+    }
+}
+
+static size_t shim_pack_mega_reserve_override(void)
+{
+    static const char *keys[] = {
+        "HWATOM_MOON_MEGA_RESERVE_BYTES",
+        "HWATOM_PACK_MEGA_RESERVE_BYTES",
+        NULL,
+    };
+    size_t i;
+
+    for (i = 0; keys[i] != NULL; i++) {
+        const char *e = getenv(keys[i]);
+        char *end = NULL;
+        unsigned long long v;
+
+        if (!e || !e[0]) {
+            continue;
+        }
+        v = strtoull(e, &end, 10);
+        if (end != e && v > 0) {
+            return shim_round_leaf_size((size_t)v);
+        }
+    }
+    return 0;
+}
+
+static int shim_pack_moon_geometry_active(void)
+{
+    return shim_pack_mega_reserve_override() > 0;
+}
 
 static unsigned shim_pack_mega_leaf_count(void)
 {
@@ -34,11 +74,14 @@ static unsigned shim_pack_mega_leaf_count(void)
     char *end = NULL;
     unsigned long long v;
 
+    if (shim_pack_moon_geometry_active()) {
+        return 0;
+    }
     if (!e || !e[0]) {
         return SHIM_PACK_MEGA_LEAVES_DEFAULT;
     }
     v = strtoull(e, &end, 10);
-    if (end == e || v == 0 || v > 256) {
+    if (end == e || v == 0 || v > SHIM_PACK_MEGA_LEAVES_MAX) {
         return SHIM_PACK_MEGA_LEAVES_DEFAULT;
     }
     return (unsigned)v;
@@ -53,21 +96,50 @@ int shim_pack_mega_enabled_v1(void)
     return e[0] != '0';
 }
 
-/* Eval-tier cap: max logical slots per 2 MiB leaf (0 = unlimited, default pack). */
+/* Eval-tier cap: max logical slots per 2 MiB leaf (0 = unlimited on lab build). */
 unsigned shim_pack_k_cap_max_v1(void)
 {
+#ifdef HWATOM_EVAL_SHIM_BUILD
+    const unsigned default_cap = 2u;
+#else
+    const unsigned default_cap = 0u;
+#endif
     const char *e = getenv("HWATOM_PACK_K_CAP");
     char *end = NULL;
     unsigned long long v;
 
-    if (!e || !e[0] || e[0] == '0') {
+    if (!e || !e[0]) {
+        return default_cap;
+    }
+    if (e[0] == '0') {
+#ifdef HWATOM_EVAL_SHIM_BUILD
+        return default_cap;
+#else
         return 0;
+#endif
     }
     v = strtoull(e, &end, 10);
-    if (end == e || v == 0 || v > 32) {
-        return 0;
+    if (end == e || v == 0) {
+        return default_cap;
     }
+    if (v > 32) {
+        return default_cap;
+    }
+#ifdef HWATOM_EVAL_SHIM_BUILD
+    if ((unsigned)v < default_cap) {
+        return default_cap;
+    }
+#endif
     return (unsigned)v;
+}
+
+int shim_pack_eval_build_v1(void)
+{
+#ifdef HWATOM_EVAL_SHIM_BUILD
+    return 1;
+#else
+    return 0;
+#endif
 }
 
 static int shim_pack_k_cap_blocks_reserve_locked(size_t need_va)
@@ -106,6 +178,7 @@ void shim_pack_reset(void)
     memset(&g_pack_arena, 0, sizeof(g_pack_arena));
     memset(&g_mega, 0, sizeof(g_mega));
     g_pack_committed_total = 0;
+    g_pack_committed_peak = 0;
     g_pack_handle_refs = 0;
 }
 
@@ -128,6 +201,7 @@ static void shim_pack_flush_locked(void)
 {
     memset(&g_pack_arena, 0, sizeof(g_pack_arena));
     memset(&g_mega, 0, sizeof(g_mega));
+    shim_2adic_reset();
 }
 
 void shim_pack_flush(void)
@@ -152,7 +226,7 @@ void shim_pack_mega_open(CUdeviceptr base_va, size_t va_len)
     if (cap < 1u) {
         cap = 1u;
     }
-    g_mega.mega_leaves = (n < cap) ? n : cap;
+    g_mega.mega_leaves = (n == 0) ? cap : ((n < cap) ? n : cap);
     g_mega.leaf_used = 1;
     shim_pack_micro_reset_locked(base_va, leaf);
     pthread_mutex_unlock(&g_map_epoch_mu);
@@ -162,12 +236,19 @@ void shim_pack_mega_open(CUdeviceptr base_va, size_t va_len)
 size_t shim_pack_new_reserve_size(void)
 {
     size_t leaf = shim_leaf_bytes_v1();
+    size_t moon = shim_pack_mega_reserve_override();
     unsigned n;
 
+    if (moon > 0) {
+        return moon;
+    }
     if (!shim_pack_mega_enabled_v1()) {
         return leaf;
     }
     n = shim_pack_mega_leaf_count();
+    if (n == 0) {
+        return leaf;
+    }
     return (size_t)n * leaf;
 }
 
@@ -233,9 +314,24 @@ int shim_pack_try_reserve(CUdeviceptr *va_out, size_t req_logical, size_t *va_ma
 
     if (g_pack_arena.active && g_pack_arena.next_off + need_va <= g_pack_arena.va_len) {
         size_t off = g_pack_arena.next_off;
+        unsigned band_idx = 0;
+
+        if (shim_2adic_enabled_v1()) {
+            band_idx = shim_2adic_bump_band();
+            if (g_pack_arena.next_off == 0) {
+                off = shim_2adic_offset_in_leaf(band_idx, need_va, g_pack_arena.va_len);
+                if (off + need_va > g_pack_arena.va_len) {
+                    off = 0;
+                }
+            }
+        }
         *va_out = g_pack_arena.base_va + (CUdeviceptr)off;
         *va_map_size = need_va;
-        g_pack_arena.next_off += need_va;
+        if (shim_2adic_enabled_v1() && g_pack_arena.next_off == 0) {
+            g_pack_arena.next_off = off + need_va;
+        } else {
+            g_pack_arena.next_off += need_va;
+        }
         g_pack_arena.logical_bytes += req_logical;
         pthread_mutex_unlock(&g_map_epoch_mu);
         return 1;
@@ -250,7 +346,7 @@ int shim_pack_open_arena(CUdeviceptr va, size_t va_len, CUmemGenericAllocationHa
     pthread_mutex_lock(&g_map_epoch_mu);
     if (g_pack_arena.active && g_pack_arena.base_va == va && !g_pack_arena.handle) {
         g_pack_arena.handle = handle;
-        g_pack_committed_total += va_len;
+        shim_pack_note_committed(va_len);
         g_pack_handle_refs = 1;
         pthread_mutex_unlock(&g_map_epoch_mu);
         return 0;
@@ -262,7 +358,7 @@ int shim_pack_open_arena(CUdeviceptr va, size_t va_len, CUmemGenericAllocationHa
     g_pack_arena.handle = handle;
     g_pack_arena.next_off = 0;
     g_pack_arena.logical_bytes = 0;
-    g_pack_committed_total += va_len;
+    shim_pack_note_committed(va_len);
     g_pack_handle_refs = 1;
     pthread_mutex_unlock(&g_map_epoch_mu);
     return 0;
@@ -361,6 +457,15 @@ size_t shim_pack_committed_bytes(void)
     size_t n = 0;
     pthread_mutex_lock(&g_map_epoch_mu);
     n = g_pack_committed_total;
+    pthread_mutex_unlock(&g_map_epoch_mu);
+    return n;
+}
+
+size_t shim_pack_committed_peak_bytes(void)
+{
+    size_t n = 0;
+    pthread_mutex_lock(&g_map_epoch_mu);
+    n = g_pack_committed_peak;
     pthread_mutex_unlock(&g_map_epoch_mu);
     return n;
 }

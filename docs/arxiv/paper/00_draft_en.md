@@ -34,7 +34,8 @@ KV cache footprint dominates VRAM in long-context LLM inference. Allocator behav
 
 1. **Mechanism** with iron-verified 2 MiB minimum granularity on H100 and P1 packing for uniform 512 KiB iso slices.
 2. **VRAM budget curve** (50/60/70% caps) with explicit stock-class pairing per A49 claim protocol.
-3. **Reproducible artifact:** open evaluation repo, Docker gate, fixed `workload_id`, canonical GATE12 transcript.
+3. **Reproducible artifact:** open evaluation repo, Docker gate, fixed `workload_id`, canonical GATE12 transcript (machine-parseable stdout contract for third-party audit).
+4. **Positioning vs sub-2MiB physical-page approaches:** we target **internal** fragmentation within stock 2 MiB leaves; custom UVM drivers that map smaller physical pages address a **different layer** (see Limitations §6).
 
 ---
 
@@ -113,11 +114,17 @@ Stock path: one `cuMemAddressReserve` + `cuMemCreate` + `cuMemMap` per logical s
 
 ## 6. Limitations
 
-1. **Synthetic workload** — not end-to-end transformer inference or vLLM P99 latency.
-2. **Single GPU SKU** — H100 PCIe; other GPUs need re-measurement (granularity may differ).
+1. **Synthetic workload** — not end-to-end transformer inference or vLLM P99 latency; heterogeneous KV slot sizes in production models not characterized.
+2. **Single GPU SKU** — H100 PCIe; other GPUs need re-measurement (granularity may differ). Driver pinned to **550.163.01**.
 3. **Slot plateau** — shim hits `ISO_MAX_SLOTS=65536` before exhausting 70% committed cap; do not imply shim fills entire budget.
-4. **Single-node** — no multi-GPU NCCL study (deferred).
+4. **Single-node** — no multi-GPU NCCL or tensor-parallel study (deferred).
 5. **GQA alias path** excluded — unstable on iron; logical GQA mode optional annex only.
+6. **vAttention comparison** — Microsoft vAttention reduces fragmentation via sub-2MiB **physical** pages (custom UVM driver). We reduce **internal** fragmentation within stock 2MiB leaves at user space. Direct head-to-head on production LLM workloads is **deferred to Track B**.
+7. **Multi-tenant isolation**, **prefix sharing** (RadixAttention-class), and **packed-leaf unmap safety** are **unverified** in v0.2.
+
+**Metric clarity:** Headline **42.2%** is **VRAM cache liberation** (committed bytes) at the 70% budget tier, not tokens/sec throughput. **+131%** is budget-curve logical KV gain where stock committed scales and shim plateaus—not per-slot throughput.
+
+**v3 arxiv:** full edit list in `docs/agent_workflow/ARXIV_V3_REVISION_CHECKLIST_V1.md`.
 
 ---
 

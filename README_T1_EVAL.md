@@ -12,6 +12,8 @@
 
 If you only run the Docker eval here, you are validating **the physics of packing** — not yet your production vLLM fleet.
 
+**MOON-Xq (bytes-KV · vLLM TurboQuant):** separate composable eval — [docs/MOON_XQ_EVAL.md](docs/MOON_XQ_EVAL.md) · tag `eval-moon-xq-20260526` · [bundle index](docs/EVAL_BUNDLE_INDEX.md).
+
 ---
 
 ## What Layer A proves today
@@ -30,6 +32,8 @@ If you only run the Docker eval here, you are validating **the physics of packin
 **Do not headline** `resident_slots_shim` vs stock — slot count is diagnostic, not the battle metric.
 
 **Methodology:** [A49 claim protocol](docs/agent_workflow/A49_CLAIM_PROTOCOL_CACHE_LIBERATION_V1.md) · leaf iron [N2 pass](docs/agent_workflow/N2_LEAF_PHYSICS_PASS_20260525_V1.md) (vault mirror; public: CHANGELOG).
+
+**Shim stats (engineers):** set `HWATOM_SHIM_STATS=1` on vLLM/cumem runs; parse with `scripts/vllm/b21_parse_cumem_trace_v1.py`. Line format **v2** since `eval-moon-xq-20260526` — see [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
@@ -69,6 +73,8 @@ If you only run the Docker eval here, you are validating **the physics of packin
 
 Requires Linux, NVIDIA GPU, Docker with GPU support.
 
+**Public Docker** ships **`lib2adic_shim_eval.so`** (structural **K_cap=2** per 2 MiB leaf). Full-K lab shim: `make -C src/shim all` — used for iron tags like `t1-leaf-physics-20260525`. See [docs/EVAL_SHIM_KCAP_V1.md](docs/EVAL_SHIM_KCAP_V1.md).
+
 ```bash
 git clone https://github.com/StanByriukov02/hwatom-kv-shim.git
 cd hwatom-kv-shim
@@ -76,7 +82,7 @@ git checkout t1-eval-20260522
 bash scripts/shim/run_docker_a46_gate12_f1prime_v1.sh
 ```
 
-Expect `GATE12_BEGIN` … `HWATOM_EVAL` banner … `A46_DOCKER_OK`.
+Expect `GATE12_BEGIN` … `HWATOM_EVAL` banner … `A46_DOCKER_OK`. Shim stats: `eval_shim=1` `k_cap=2`.
 
 Manual build:
 

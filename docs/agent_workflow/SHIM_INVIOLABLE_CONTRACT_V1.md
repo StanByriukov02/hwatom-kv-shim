@@ -7,7 +7,7 @@ blocker: BLOCKER-001                # GATE_BLOCKERS: closed (§5 swarm deferred)
 vault_canon: docs/HwatomOrgOS/05_OPERATOR_PLAST/
 operator_signed: 2026-05-21         # tiers T1/T2/T3 + WORKLOAD OK (tasks 1–3)
 swarm_must_must_not: signed           # steps 10–11 — DELEGATION_MAP + vault §5
-workload_annex: filled              # see §9 — mirrors WORKLOAD_A_GATE_DECISION_V1
+workload_annex: filled              # §8.1 Layer A + §8.2 Layer B (Node 1 PASS 2026-05-24)
 public_repo_skeleton: docs/HwatomOrgOS/05_OPERATOR_PLAST/public_repo_v1_skeleton/
 iron_pending: C-113,C-119,C-109     # sec31 + IRON_PENDING_AND_DEFERRED_ACTIVATION_V1
 contact_email: stanislav.byriukov.research@gmail.com   # canon: OPERATOR_CONTACT_CANON_V1
@@ -28,6 +28,8 @@ contact_email: stanislav.byriukov.research@gmail.com   # canon: OPERATOR_CONTACT
 | H100 **GATE12** stdout metrics | B200 / APTEI (Track C) |
 | `lib2adic_shim.so` Driver API path (cuMem) | ASDA/vLLM plugin claims in gate README (Track B) |
 | Public repro + inbound license path | Full internal/partner stack in open repo |
+
+**T2 ≠ T1 narrative (Node 1.3.2):** Track B / `workload_id=b_vllm_*` claims **must not** cite T1 `GATE12_canonical.txt`, Table 1 **42.204%**, or `a_gate_v1_kv_microbench` numbers. T1 README / arxiv = synthetic cuMem only (§8.1). B iron file = separate canonical (future `GATE12_B_canonical.txt`).
 
 Vault: `dual-artifact-scratch-vs-vllm-plugin`, `R03_SYNTHESIS_V1` §A, `RELEASE_GATE_A_12SEC_V1`.
 
@@ -158,22 +160,68 @@ BLOCKER-002 (H100 log) separate — `deferred_implement_phase`.
 
 ## 8. Annex — WORKLOAD (from step 5, operator OK)
 
+### 8.1 Layer A — Track T1 (closed)
+
 ```yaml
 workload_A_gate: minimal_harness + synthetic_kv_band_microbench
 workload_id: a_gate_v1_kv_microbench
 model: none_for_gate_v1
 context_tokens_12s: bench_derived_fixed_window
 readme_arxiv_same: yes
-workload_B_deferred: true
-workload_B_label: b_customer_vllm_plugin_spike
 readme_sections:
   - README.md#gate-12s-proof
-  - README.md#vllm-integration-when-ready
 ```
 
 Full record: `05_OPERATOR_PLAST/by_dimension/tests_contours_plans/A/WORKLOAD_A_GATE_DECISION_V1.md`
 
-**Failure forks:** WORKLOAD § F1 — if T1–T2 fail on iron, revise W1 per protocol (not marketing).
+### 8.2 Layer B — Track T2 (Node 1 PASS 2026-05-24)
+
+```yaml
+workload_B_iron: b_vllm_kv_integration_v1
+workload_B_smoke: b_gate_v1_vllm_smoke_v1
+workload_B_deferred: false
+tier: T2
+stack: vllm
+vllm_image: vllm/vllm-openai:v0.16.0
+vllm_version_verified: "0.16.0"
+h100_verify_artifact: bench_artifacts/b_node1_h100_verify_20260524/NODE1_H100_VERIFY.txt
+injection_primary: Branch_A   # CuMemAllocator + --enable-sleep-mode + LD_PRELOAD
+injection_fallback: Branch_B   # integrations/vllm pluggable VMM (Node 8)
+constraints:
+  tp_size: 1
+  processes: 1
+  expandable_segments: false
+tabu:
+  - t1_table1_on_stock_vllm_ld_preload
+  - iron_before_b12_phase_b_pass
+yaml_canon:
+  - docs/agent_workflow/workloads/b_vllm_kv_integration_v1.yaml
+  - docs/agent_workflow/workloads/b_gate_v1_vllm_smoke_v1.yaml
+decision_doc: docs/agent_workflow/B_WORKLOAD_DECISION_V1.md
+callgraph_doc: docs/agent_workflow/B11_VLLM_CALLGRAPH_V1.md  # Node 2 — not gate for annex
+readme_sections:
+  - README.md#vllm-integration-when-ready
+  - README_T1_EVAL.md#track-b
+```
+
+**Failure forks:** WORKLOAD § F1 — if T1–T2 fail on iron, revise W1 per protocol (not marketing).  
+**B bypass (B-CONC-01):** stock vLLM + LD_PRELOAD alone is **not** shim failure — Node 3 null test.
+
+---
+
+## 6. P1 verification backlog (2026-05-25 — Opus review)
+
+**Canon narrative:** `P1_INTRA_LEAF_POSITION_V1.md`
+
+| Item | Requirement before enterprise / multi-tenant claim |
+|------|--------------------------------------------------|
+| **Packed-leaf isolation** | `cuMemUnmap` / free of slot A must not corrupt VA/phys segments of B–D in same 2 MiB leaf |
+| **Packing trigger** | Document whether pack requires concurrent reserves or serial batch — verify in `shim_pack_v1.c` |
+| **Heterogeneous band sizes** | No claim beyond uniform 512 KiB iso until B iron |
+| **NCCL / TP≥2** | Single-node only until explicit test; use `NCCL_CUMEM_ENABLE=0` on distributed smoke |
+| **Radix / prefix sharing** | **TABU** compat with SGLang Radix until measured — orthogonal layers |
+
+**Plateau @ 70% budget:** `ISO_MAX_SLOTS=65536` is bench configuration — not proof of fundamental shim ceiling (**arxiv** + R8.2 metric).
 
 ---
 
@@ -181,6 +229,9 @@ Full record: `05_OPERATOR_PLAST/by_dimension/tests_contours_plans/A/WORKLOAD_A_G
 
 | Doc | Role |
 |-----|------|
+| `P1_INTRA_LEAF_POSITION_V1.md` | strengths/weaknesses + actions |
+| `GATE12_PROTOCOL_VALUE_V1.md` | audit contract separate from P1 |
+| `ARXIV_V3_REVISION_CHECKLIST_V1.md` | preprint text deltas |
 | `GATE_BLOCKERS_V1.md` | BLOCKER-001 = closed |
 | `public_repo_v1_skeleton/` | step 8 tree |
 | `2026-05-21_A-implementation-chain_V1.md` | node 2 shim, node 6 repo |

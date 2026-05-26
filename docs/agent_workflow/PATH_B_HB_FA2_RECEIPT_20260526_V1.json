@@ -1,0 +1,65 @@
+{
+  "workload_id": "MOON-REP-HB-01",
+  "investigate": "H-B FA2 parity tok/s",
+  "falsifier": {
+    "hypothesis": "tok/s gap is FA2 downgrade not KV quant",
+    "kill_if": "ratio_tq_vs_fa2_baseline >= 0.97",
+    "confirm_if": "ratio_tq_vs_fa2 within 5pp of path_a_v2 (~0.835)"
+  },
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "gpu": "NVIDIA H100 PCIe",
+  "bench": {
+    "ctx_toks": 8192,
+    "decode_tokens": 48,
+    "max_model_len": 12288,
+    "enforce_eager": false
+  },
+  "arms": [
+    {
+      "arm": "baseline_fa_default",
+      "kv_cache_dtype": "auto",
+      "flash_attn_version": null,
+      "tok_s": {
+        "ctx_tokens": 4097,
+        "decode_tokens": 48,
+        "elapsed_s": 0.447,
+        "tok_s": 107.28
+      }
+    },
+    {
+      "arm": "baseline_fa2_parity",
+      "kv_cache_dtype": "auto",
+      "flash_attn_version": 2,
+      "tok_s": {
+        "ctx_tokens": 4097,
+        "decode_tokens": 48,
+        "elapsed_s": 0.462,
+        "tok_s": 103.89
+      }
+    },
+    {
+      "arm": "turboquant_4bit_nc",
+      "kv_cache_dtype": "turboquant_4bit_nc",
+      "flash_attn_version": null,
+      "tok_s": {
+        "ctx_tokens": 4097,
+        "decode_tokens": 48,
+        "elapsed_s": 0.537,
+        "tok_s": 89.39
+      }
+    }
+  ],
+  "analysis": {
+    "tok_s_baseline_fa_default": 107.28,
+    "tok_s_baseline_fa2": 103.89,
+    "tok_s_turboquant_4bit_nc": 89.39,
+    "ratio_tq_vs_fa_default": 0.8332,
+    "ratio_tq_vs_fa2_parity": 0.8604,
+    "ratio_fa2_vs_fa_default": 0.9684,
+    "path_a_v2_ratio_reference": 0.8346,
+    "hb_verdict": "H_B_CONFIRMED_QUANT_COST",
+    "hb_meaning": "Gap unchanged at FA2 parity \u2014 ~12-17% is real TQ/KV cost on this bench.",
+    "tok_s_gate_pass_at_fa2_parity": false
+  },
+  "elapsed_sec": 236.2
+}

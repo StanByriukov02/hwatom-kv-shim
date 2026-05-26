@@ -25,6 +25,28 @@ releases:
       cache_liberation_pct_70: 42.20
     pass_gate: LEAF_PHYSICS_OK=yes
 
+  - tag: eval-moon-xq-20260526
+    semver: "0.2.0"
+    workload_id: MOON-REP-Xq-VLLM-01
+    canonical_results: results/MOON_XQ_GATE_SUMMARY.txt
+    public_doc: docs/MOON_XQ_EVAL.md
+    repro:
+      script: scripts/moon/recipe_moon_xq_v1.sh
+      hb_falsifier: scripts/moon/path_b_hb_fa2_parity_v1.py
+    headline_metrics:
+      kv_bytes_reduction_pct: 58.0
+      ppl_drift_pct: 0.58
+      tok_s_ratio_fa2_parity: 0.86
+    pass_gates:
+      bytes: true
+      ppl: true
+      niah_deep: true
+      tok_s_eod_097: false
+    tabu:
+      - tier3_pass_headline
+      - vllm_pool_pct
+      - nvml_liberation_moon_layer
+
 paper:
   arxiv_id: null
   title: "Packing Logical KV Slices Under CUDA 2 MiB Granularity: Measured VRAM Liberation on H100"
@@ -49,3 +71,10 @@ keywords:
   - internal-fragmentation
   - gate-12s
   - t1_leaf_physics_v1
+  - MOON-Xq
+  - turboquant
+  - bytes-per-token
+  - eval-moon-xq-20260526
+  - MOON-REP-Xq-VLLM-01
+  - shim-stats-v2
+  - eval-shim-k-cap

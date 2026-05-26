@@ -80,7 +80,7 @@ Eval/public Docker **не должен** быть тем же продуктом
 | `HWATOM_PACK_K_CAP` / reduced K в eval `.so` | Там же — **не** time/token throttle |
 | Contractual downgrade on breach | Commercial + telemetry |
 
-**Важно:** сегодня `entrypoint_f1prime.sh` включает `HWATOM_SHIM_PACK=1` `HWATOM_PACK_MEGA=1` — **механизм pack в eval = тот же**, что iron proof. Защита сейчас = **legal + scope + отсутствие T2/T3/ serving**, **не** урезанный K в бинарнике. Это **не забыто** — вынесено в commercial K-tier **после** T1 public.
+**Update 2026-05-26:** public Docker (`Dockerfile.f1prime`, `Dockerfile.eval`) ships **`lib2adic_shim_eval.so`** — compile-time `HWATOM_EVAL_SHIM_BUILD`, default **K_cap=2** per leaf; env `HWATOM_PACK_K_CAP=0` does **not** unlock full K. Lab iron / `t1-leaf-physics` = `make -C src/shim all` (full K). See `docs/EVAL_SHIM_KCAP_V1.md`.
 
 ### CUBIN/SASS «dark core» (notebook) vs наш путь
 

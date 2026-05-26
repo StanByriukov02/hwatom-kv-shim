@@ -69,6 +69,9 @@
 | `HWATOM_GQA_ALIAS=1` path | Unstable; matrix says logical only |
 | Fabricated `results/*` | C-129 |
 | Production keys, operator H100 creds | Security |
+| `main.pdf` until arxiv tag | Stale vs tex — ship with `t1-arxiv-*` tag only |
+| `infra/`, SWARM, patch_queue, GEMINI vault | Dev monorepo only — see `T1_PUBLIC_STAGING_GATE_V1.md` |
+| README &lt; 60 lines / missing layout section | Release script regression — **lint blocks push** |
 
 ## Scout annex (optional, not T1 lead)
 

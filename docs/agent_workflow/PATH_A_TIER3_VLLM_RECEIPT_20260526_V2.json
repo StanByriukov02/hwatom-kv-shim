@@ -1,0 +1,166 @@
+{
+  "workload_id": "MOON-REP-Xq-VLLM-01",
+  "iron_tag": "v2",
+  "path": "A",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "vllm_kv_baseline": "auto",
+  "vllm_kv_quant": "turboquant_4bit_nc",
+  "enforce_eager": false,
+  "gpu": "NVIDIA H100 PCIe",
+  "gates_signed": {
+    "bytes_min_reduction": 0.3,
+    "ppl_drift_max": 0.01,
+    "tok_s_min_ratio": 0.97
+  },
+  "gates": {
+    "bytes": {
+      "fp16_bytes_per_token": 57344,
+      "quant_bytes_per_token": 24064,
+      "reduction_frac": 0.5804,
+      "pass": true,
+      "method": "tier1_bpt_preset_aligned_vllm_dtype"
+    },
+    "ppl": {
+      "ppl_fp16": 4278.3497,
+      "ppl_quant": 4303.0853,
+      "drift_frac": 0.0058,
+      "pass": true
+    },
+    "niah": {
+      "pass": true,
+      "k3": false,
+      "quant": [
+        {
+          "depth_target": 4096,
+          "prefill_tokens": 44,
+          "max_prefill_cap": 32736,
+          "output_snip": " The secret code is SECRET-729184. \n\nYou asked me to recall the secret code exactly, and that is what I have done.",
+          "hit": true
+        },
+        {
+          "depth_target": 8192,
+          "prefill_tokens": 44,
+          "max_prefill_cap": 32736,
+          "output_snip": " The secret code is SECRET-729184. \n\nYou asked to recall the secret code exactly, and I have provided it as stated in the",
+          "hit": true
+        },
+        {
+          "depth_target": 16384,
+          "prefill_tokens": 20484,
+          "max_prefill_cap": 32736,
+          "output_snip": " SECRET-729184. The secret code is SECRET-729184. \n\nThis is a simple substitution cipher where each letter",
+          "hit": true
+        },
+        {
+          "depth_target": 32768,
+          "prefill_tokens": 32624,
+          "max_prefill_cap": 32736,
+          "output_snip": " The secret code is SECRET-729184. \n\nThis is the exact sequence provided in the text. The repetition of the grass and sky statements",
+          "hit": true
+        }
+      ]
+    },
+    "tok_s": {
+      "fp16": {
+        "ctx_tokens": 4097,
+        "decode_tokens": 48,
+        "elapsed_s": 0.448,
+        "tok_s": 107.17
+      },
+      "quant": {
+        "ctx_tokens": 4097,
+        "decode_tokens": 48,
+        "elapsed_s": 0.537,
+        "tok_s": 89.44
+      },
+      "ratio": 0.8346,
+      "pass": false
+    },
+    "k1": {
+      "pass": true
+    }
+  },
+  "baseline": {
+    "niah": [
+      {
+        "depth_target": 4096,
+        "prefill_tokens": 44,
+        "max_prefill_cap": 32736,
+        "output_snip": " The secret code is SECRET-729184. \n\nI recalled the exact secret code as stated in the instruction. There were no changes or modifications",
+        "hit": true
+      },
+      {
+        "depth_target": 8192,
+        "prefill_tokens": 44,
+        "max_prefill_cap": 32736,
+        "output_snip": " The secret code is SECRET-729184. \n\nI recalled the exact secret code as stated in the instruction. There were no changes or modifications",
+        "hit": true
+      },
+      {
+        "depth_target": 16384,
+        "prefill_tokens": 20484,
+        "max_prefill_cap": 32736,
+        "output_snip": " SECRET-729184. The secret code is SECRET-729184. \n\nThis appears to be a simple substitution of a",
+        "hit": true
+      },
+      {
+        "depth_target": 32768,
+        "prefill_tokens": 32624,
+        "max_prefill_cap": 32736,
+        "output_snip": " The secret code is SECRET-729184. \n\nThis is a direct recall of the secret code provided in the text, which was stated as",
+        "hit": true
+      }
+    ],
+    "tok_s": {
+      "ctx_tokens": 4097,
+      "decode_tokens": 48,
+      "elapsed_s": 0.448,
+      "tok_s": 107.17
+    },
+    "ppl": 4278.349707396895
+  },
+  "turboquant": {
+    "niah": [
+      {
+        "depth_target": 4096,
+        "prefill_tokens": 44,
+        "max_prefill_cap": 32736,
+        "output_snip": " The secret code is SECRET-729184. \n\nYou asked me to recall the secret code exactly, and that is what I have done.",
+        "hit": true
+      },
+      {
+        "depth_target": 8192,
+        "prefill_tokens": 44,
+        "max_prefill_cap": 32736,
+        "output_snip": " The secret code is SECRET-729184. \n\nYou asked to recall the secret code exactly, and I have provided it as stated in the",
+        "hit": true
+      },
+      {
+        "depth_target": 16384,
+        "prefill_tokens": 20484,
+        "max_prefill_cap": 32736,
+        "output_snip": " SECRET-729184. The secret code is SECRET-729184. \n\nThis is a simple substitution cipher where each letter",
+        "hit": true
+      },
+      {
+        "depth_target": 32768,
+        "prefill_tokens": 32624,
+        "max_prefill_cap": 32736,
+        "output_snip": " The secret code is SECRET-729184. \n\nThis is the exact sequence provided in the text. The repetition of the grass and sky statements",
+        "hit": true
+      }
+    ],
+    "tok_s": {
+      "ctx_tokens": 4097,
+      "decode_tokens": 48,
+      "elapsed_s": 0.537,
+      "tok_s": 89.44
+    },
+    "ppl": 4303.0852953117155
+  },
+  "tier3_pass": false,
+  "fail_gates": [
+    "tok_s"
+  ],
+  "elapsed_sec": 215.8
+}

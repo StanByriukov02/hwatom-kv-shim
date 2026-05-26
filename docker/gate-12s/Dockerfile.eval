@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1.6
+# Post-T1 eval tier — same F1-prime harness, HWATOM_PACK_K_CAP in container env.
+# TABU: do not tag gate-12s-eval before public t1-eval-20260522 push.
+
+FROM nvidia/cuda:12.6.0-devel-ubuntu22.04 AS build
+ARG HWATOM_BUILD_ID=gate12s_eval_20260525a
+WORKDIR /src
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libc6-dev make ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN make -C src/shim clean eval HWATOM_BUILD_ID=${HWATOM_BUILD_ID} \
+    && make -C tools/shim_iron clean iron_gate_v1
+
+FROM nvidia/cuda:12.6.0-runtime-ubuntu22.04
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/hwatom
+COPY --from=build /src/tools/shim_iron/iron_gate_v1 /opt/hwatom/iron_gate_v1
+COPY --from=build /src/src/shim/lib2adic_shim_eval.so /opt/hwatom/lib2adic_shim.so
+ENV HWATOM_EVAL_SHIM=1
+COPY docker/gate-12s/entrypoint_eval_cap.sh /opt/hwatom/entrypoint_eval_cap.sh
+RUN chmod +x /opt/hwatom/entrypoint_eval_cap.sh /opt/hwatom/iron_gate_v1
+ARG HWATOM_BUILD_ID=gate12s_eval_20260525a
+ENV HWATOM_DIR=/opt/hwatom
+ENV HWATOM_BUILD_ID=${HWATOM_BUILD_ID}
+ENV HWATOM_PACK_K_CAP=2
+ENV HWATOM_EVAL_TIER=eval_cap_v1
+ENV HWATOM_EVAL_WORKLOAD_ID=a_gate_v1_kv_microbench
+ENTRYPOINT ["/opt/hwatom/entrypoint_eval_cap.sh"]

@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc libc6-dev make ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 COPY . .
-RUN make -C src/shim clean all \
+RUN make -C src/shim clean eval \
     && make -C tools/shim_iron clean iron_gate_v1
 
 FROM nvidia/cuda:12.6.0-base-ubuntu22.04
@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/hwatom
 COPY --from=build /src/tools/shim_iron/iron_gate_v1 /opt/hwatom/iron_gate_v1
-COPY --from=build /src/src/shim/lib2adic_shim.so /opt/hwatom/lib2adic_shim.so
+COPY --from=build /src/src/shim/lib2adic_shim_eval.so /opt/hwatom/lib2adic_shim.so
+ENV HWATOM_EVAL_SHIM=1
 COPY docker/gate-12s/entrypoint_f1prime.sh /opt/hwatom/entrypoint_f1prime.sh
 RUN chmod +x /opt/hwatom/entrypoint_f1prime.sh /opt/hwatom/iron_gate_v1
 ENV HWATOM_DIR=/opt/hwatom

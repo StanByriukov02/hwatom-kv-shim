@@ -21,7 +21,7 @@
 ```bash
 git checkout eval-moon-xq-20260526
 cat results/MOON_XQ_GATE_SUMMARY.txt
-# MOON: bash integrations/vllm/recipe_moon_xq_v1.sh path-a-v2
+# MOON: bash scripts/moon/recipe_moon_xq_v1.sh path-a-v2
 # pack: bash scripts/shim/run_iron_leaf_ceiling_v1.sh  # full-K lab shim
 ```
 

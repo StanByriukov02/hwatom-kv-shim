@@ -1,12 +1,19 @@
-# Hardware Atom — T1 + MOON-Xq evaluation (CUDA KV / gate-12s)
+# H100 LLM KV-cache evaluation — cuMem leaf packing + vLLM TurboQuant
+
+Reproducible **evaluation-only** artifacts for NVIDIA H100 inference memory:
+
+1. **CUDA `cuMem` leaf packing** — pack more logical KV bands per stock 2 MiB page (user-space shim).
+2. **vLLM 0.21 + TurboQuant (`turboquant_4bit_nc`)** — measure KV **bytes/token**, quality, and decode speed on Qwen2.5-7B.
+
+*Internal codenames (Git tags only):* `gate12s` / Layer A = leaf pack · `MOON-Xq` = TurboQuant bytes track · tag `eval-moon-xq-20260526`.
 
 ![docker build](https://github.com/StanByriukov02/hwatom-kv-shim/actions/workflows/docker-build.yml/badge.svg)
 
-**Eval release 0.2.0:** tag `eval-moon-xq-20260526` · [RELEASE_0.2.0.md](docs/RELEASE_0.2.0.md) · [MOON_XQ_EVAL.md](docs/MOON_XQ_EVAL.md) · machine summary [MOON_XQ_GATE_SUMMARY.txt](results/MOON_XQ_GATE_SUMMARY.txt)
+**Eval release 0.2.0:** tag `eval-moon-xq-20260526` · [RELEASE_0.2.0.md](docs/RELEASE_0.2.0.md) · [MOON_XQ_EVAL.md](docs/MOON_XQ_EVAL.md) · [MOON_XQ_GATE_SUMMARY.txt](results/MOON_XQ_GATE_SUMMARY.txt)
 
-Pack up to four 512 KiB logical KV slices per 2 MiB CUDA leaf on NVIDIA H100 — **42.2%** measured VRAM liberation at 70% budget fill (iso @ committed), **100%** intra-leaf layout efficiency at ceiling — user-space shim, reproducible Docker + iron eval.
+**Leaf pack (iso iron):** **42.2%** VRAM liberation @ 70% budget · **100%** intra-leaf layout efficiency · Docker repro on Hub.
 
-**MOON-Xq (2026-05-26 iron):** **−58%** KV bytes @ preset · ppl drift **+0.58%** · NIAH deep prefill **PASS** · tok/s vs FP16 **~0.86×** (**FAIL** EOD guard — honest, not Tier3 win).
+**vLLM TurboQuant KV (2026-05-26 iron):** **−58%** KV bytes · ppl **+0.58%** · NIAH deep prefill **PASS** · decode **~0.86×** vs FP16 (**slower** — stated explicitly).
 
 **License:** [LICENSE.md](LICENSE.md) (Evaluation-Only) · **Measured:** [GATE12_canonical.txt](results/GATE12_canonical.txt) · [GATE12_leaf_physics_v1.txt](results/GATE12_leaf_physics_v1.txt) · **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 
@@ -14,9 +21,9 @@ Pack up to four 512 KiB logical KV slices per 2 MiB CUDA leaf on NVIDIA H100 —
 |--|--|
 | **Tags** | `t1-eval-20260522` · `t1-leaf-physics-20260525` · `eval-moon-xq-20260526` |
 | **Latest iron** | `workload_id=t1_leaf_physics_v1` · `LEAF_PHYSICS_OK=yes` |
-| **MOON workload** | `MOON-REP-Xq-VLLM-01` |
-| **Primary repro** | Docker `hwatom:gate-12s-f1` — [README_T1_EVAL.md](README_T1_EVAL.md) |
-| **MOON repro** | `bash scripts/moon/recipe_moon_xq_v1.sh path-a-v2` (needs GPU + vLLM 0.21 docker) |
+| **TurboQuant workload id** | `MOON-REP-Xq-VLLM-01` (internal) |
+| **Leaf repro** | Docker Hub `gate12s-f1prime` — [README_T1_EVAL.md](README_T1_EVAL.md) |
+| **vLLM TurboQuant repro** | `bash scripts/moon/recipe_moon_xq_v1.sh path-a-v2` (GPU + vLLM 0.21) |
 | **Leaf iron** | `bash scripts/shim/run_iron_leaf_ceiling_v1.sh` |
 | **@ 70% VRAM budget** | **42.20%** liberation · **131%** logical KV · **η_leaf=100%** |
 | **Contact (production)** | stanislav.byriukov.research@gmail.com |
@@ -28,7 +35,7 @@ Pack up to four 512 KiB logical KV slices per 2 MiB CUDA leaf on NVIDIA H100 —
 
 Full narrative, disclaimers, Layer B roadmap: **[README_T1_EVAL.md](README_T1_EVAL.md)**
 
-MOON bytes-KV layer: **[docs/MOON_XQ_EVAL.md](docs/MOON_XQ_EVAL.md)** · index **[docs/EVAL_BUNDLE_INDEX.md](docs/EVAL_BUNDLE_INDEX.md)**
+vLLM TurboQuant KV bytes: **[docs/MOON_XQ_EVAL.md](docs/MOON_XQ_EVAL.md)** · index **[docs/EVAL_BUNDLE_INDEX.md](docs/EVAL_BUNDLE_INDEX.md)**
 
 Claim discipline: [docs/agent_workflow/A49_CLAIM_PROTOCOL_CACHE_LIBERATION_V1.md](docs/agent_workflow/A49_CLAIM_PROTOCOL_CACHE_LIBERATION_V1.md)
 
@@ -71,7 +78,7 @@ docker build -f docker/gate-12s/Dockerfile.eval -t hwatom:gate-12s-eval .
 
 ---
 
-## Quick repro (MOON-Xq · H100-class GPU)
+## Quick repro (vLLM TurboQuant KV · H100-class GPU)
 
 ```bash
 git checkout eval-moon-xq-20260526
@@ -104,7 +111,7 @@ Requires `vllm/vllm-openai:v0.21.0` and HuggingFace weights for `Qwen/Qwen2.5-7B
 | Tier | In this repo |
 |------|----------------|
 | **T1** | Shim + gate-12s Docker + GATE12 metrics |
-| **MOON-Xq** | Bytes-KV iron + vLLM repro scripts (not custom quant kernel) |
+| **vLLM TurboQuant track** (`MOON-Xq` tag) | KV bytes iron + vLLM repro (upstream quant, not our kernel) |
 | **T2** | Not shipped (customer vLLM integration — partnership) |
 | **T3** | Not shipped (eBPF / kernel — contract only) |
 

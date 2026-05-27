@@ -57,7 +57,7 @@ jobs:
           JWT=$(curl -sS -X POST -H "Content-Type: application/json" \
             -d "{\"username\":\"${DOCKERHUB_USERNAME}\",\"password\":\"${DOCKERHUB_TOKEN}\"}" \
             https://hub.docker.com/v2/users/login/ | jq -r .token)
-          SHORT='H100 KV eval: cuMem leaf pack 42% + MOON-Xq -58% bytes. vLLM/Qwen. Eval-only.'
+          SHORT='H100 LLM KV eval: cuMem 2MiB leaf pack + vLLM TurboQuant 4bit KV. Repro.'
           jq -n --arg d "$SHORT" --rawfile f docs/DOCKERHUB.md \
             '{description:$d, full_description:$f}' > /tmp/hub-patch.json
           curl -sS -X PATCH \

@@ -1,21 +1,40 @@
-# Docker Hub — public eval images
+# Docker Hub — H100 LLM KV-cache evaluation images
+
+**What this is (plain language):** reproducible **evaluation** containers for two related problems on NVIDIA H100:
+
+1. **CUDA memory layout** — pack more logical KV data into stock NVIDIA `cuMem` 2 MiB pages (user-space shim, not a fork of vLLM).
+2. **KV cache size on vLLM** — measure **fewer bytes per token** using upstream **vLLM 0.21 + `turboquant_4bit_nc`** on Qwen2.5-7B (quality + throughput measured honestly).
 
 **Registry:** [hub.docker.com/r/stanbyriukov31/hwatom-kv-shim](https://hub.docker.com/r/stanbyriukov31/hwatom-kv-shim)  
-**License:** [LICENSE.md](../LICENSE.md) (Evaluation-Only)  
-**Source:** [github.com/StanByriukov02/hwatom-kv-shim](https://github.com/StanByriukov02/hwatom-kv-shim)
+**License:** [LICENSE.md](../LICENSE.md) (Evaluation-Only — not a production support offer)  
+**Source / receipts:** [github.com/StanByriukov02/hwatom-kv-shim](https://github.com/StanByriukov02/hwatom-kv-shim)
+
+**Internal codename map (for Git tags only):** `MOON-Xq` = vLLM TurboQuant KV-bytes eval track · `Layer A` / `gate12s` = cuMem leaf-pack track.
 
 ---
 
-## Images
+## Who should care
 
-| Tag | Dockerfile | What it runs |
-|-----|------------|--------------|
-| `gate12s-f1prime` | `Dockerfile.f1prime` | Layer A F1-prime GPU iron (GATE12) |
-| `t1-leaf-physics-20260525` | same as f1prime | alias @ release tag |
-| `gate12s-eval` | `Dockerfile.eval` | eval-cap tier (K≤2/leaf) |
-| `eval-moon-xq-20260526` | same as eval | alias @ MOON eval release |
+| You are… | Start here |
+|----------|------------|
+| **CUDA / GPU memory engineer** | `gate12s-f1prime` — leaf packing iron |
+| **vLLM / inference engineer** | Git tag `eval-moon-xq-20260526` + [MOON_XQ_EVAL.md](MOON_XQ_EVAL.md) |
+| **Automated scanner** | keywords: `cuMem`, `KV cache`, `vLLM`, `turboquant`, `H100`, `long-context`, `Qwen2.5` |
 
-**MOON-Xq full iron** (vLLM 0.21 + TurboQuant + H100) is **not** a single Hub image — use repo recipe:
+---
+
+## Images on Docker Hub
+
+| Tag | What it is |
+|-----|------------|
+| `gate12s-f1prime` | **cuMem leaf-pack repro** — run GPU iron, expect `GATE12` / `A46_DOCKER_OK` |
+| `t1-leaf-physics-20260525` | same image, frozen release name |
+| `gate12s-eval` | eval-tier shim build (K cap baked in) |
+| `eval-moon-xq-20260526` | alias for eval image; **full vLLM TurboQuant iron is not one pull** — see below |
+
+### vLLM TurboQuant eval (not a single `docker pull`)
+
+Full stack needs **vLLM 0.21 docker + H100 + weights**:
 
 ```bash
 git clone https://github.com/StanByriukov02/hwatom-kv-shim.git
@@ -25,7 +44,7 @@ bash scripts/moon/recipe_moon_xq_v1.sh path-a-v2
 
 ---
 
-## Quick pull (Layer A)
+## Quick start — leaf pack (one command)
 
 ```bash
 docker pull stanbyriukov31/hwatom-kv-shim:gate12s-f1prime
@@ -34,36 +53,23 @@ docker run --rm --gpus all stanbyriukov31/hwatom-kv-shim:gate12s-f1prime
 
 Expect `GATE12_BEGIN`, `workload_id=a_gate_v1_kv_microbench`, `A46_DOCKER_OK`.
 
-With artifact mount:
-
-```bash
-mkdir -p bench_out
-docker run --rm --gpus all \
-  -e HWATOM_ART_DIR=/out -v "$(pwd)/bench_out:/out" \
-  stanbyriukov31/hwatom-kv-shim:gate12s-f1prime
-```
-
 ---
 
-## Honest metrics (iron)
+## Measured results (2026-05-26 iron, honest)
 
-| Layer | Result |
-|-------|--------|
-| Leaf @ 70% budget | **42.2%** liberation · **η_leaf=100%** |
-| MOON-Xq bytes | **−58%** · ppl **+0.58%** |
-| MOON-Xq tok/s | **~0.86×** FP16 FA2 (**FAIL** speed guard) |
+| Track | Metric | Result |
+|-------|--------|--------|
+| **cuMem leaf pack** | VRAM liberation @ 70% fill | **42.2%** · layout efficiency **100%** |
+| **vLLM TurboQuant KV** | KV bytes vs FP16 | **−58%** |
+| **vLLM TurboQuant KV** | perplexity drift | **+0.58%** |
+| **vLLM TurboQuant KV** | decode tok/s vs FP16 FA2 | **~0.86×** (slower — stated explicitly) |
 
-Summary: [results/MOON_XQ_GATE_SUMMARY.txt](../results/MOON_XQ_GATE_SUMMARY.txt)
+Machine summary: [results/MOON_XQ_GATE_SUMMARY.txt](../results/MOON_XQ_GATE_SUMMARY.txt)
+
+**Not claimed:** OOM fix on your fleet · NVML % win · “beats vLLM” on latency.
 
 ---
 
 ## Publish (maintainer)
 
-Local: `bash scripts/shim/publish_docker_hub_v1.sh`  
-CI: `.github/workflows/docker-hub-publish.yml` on version tags (needs `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN` secrets).
-
----
-
-## Falsifier (distribution)
-
-30d after publish: Hub pulls alone **≠** pilot/inbound. Track **substantive** engineering contact, not pull count.
+`bash scripts/shim/publish_docker_hub_v1.sh` · CI: `.github/workflows/docker-hub-publish.yml`

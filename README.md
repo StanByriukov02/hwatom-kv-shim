@@ -20,6 +20,7 @@ Pack up to four 512 KiB logical KV slices per 2 MiB CUDA leaf on NVIDIA H100 —
 | **Leaf iron** | `bash scripts/shim/run_iron_leaf_ceiling_v1.sh` |
 | **@ 70% VRAM budget** | **42.20%** liberation · **131%** logical KV · **η_leaf=100%** |
 | **Contact (production)** | stanislav.byriukov.research@gmail.com |
+| **Docker Hub** | [`stanbyriukov31/hwatom-kv-shim`](https://hub.docker.com/r/stanbyriukov31/hwatom-kv-shim) · [DOCKERHUB.md](docs/DOCKERHUB.md) |
 
 ---
 
@@ -36,6 +37,15 @@ Bundle index: [docs/agent_workflow/T1_PUBLIC_BUNDLE_V1.md](docs/agent_workflow/T
 ---
 
 ## Quick repro (Docker — Layer A)
+
+**Pull (no clone):**
+
+```bash
+docker pull stanbyriukov31/hwatom-kv-shim:gate12s-f1prime
+docker run --rm --gpus all stanbyriukov31/hwatom-kv-shim:gate12s-f1prime
+```
+
+**From source:**
 
 ```bash
 git clone https://github.com/StanByriukov02/hwatom-kv-shim.git
